@@ -1,15 +1,7 @@
-009B3D20   . 75 33          JNZ SHORT ZOMBI.009B3D55
-
-
-0045D0C7  - JE выход
-0045C23B  - CALL ЮплейСтарт
-005F5890  - ЮплейСтарт
-005F58D6  - Безусловный переход*
+0045D0C7 - JE выход
+0045C23B - CALL ЮплейСтарт
+005F5890 - ЮплейСтарт
+005F58D6 - Безусловный переход*
 009B390A - Юплеевские процедуры
-009B3958 - ret*
-
-
-
-5C1BFE88 - int3 (сигнатура FF 15 08 11 47 5C 85 C0)
-
-5C14A813 - исключение
+009B3958 - ret* uplay_r1_loader.UPLAY_WIN_SetActionsCompleted
+009B396A - ret* uplay_r1_loader.UPLAY_Start

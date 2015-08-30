@@ -45,6 +45,13 @@ start:
 				invoke FlushInstructionCache,[pinfo.hProcess],009B3958h,2
 			.endif
 		.endif
+		invoke VirtualProtectEx,[pinfo.hProcess],009B396Ah,2,PAGE_EXECUTE_READWRITE,lpflOldProtec
+		.if eax<>0
+			invoke WriteProcessMemory,[pinfo.hProcess],009B396Ah,byte2,2,lpflOldProtec
+			.if eax<>0
+				invoke FlushInstructionCache,[pinfo.hProcess],009B396Ah,2
+			.endif
+		.endif
 		invoke ResumeThread,[pinfo.hThread]
 		invoke CloseHandle,[pinfo.hThread]
 		invoke CloseHandle,[pinfo.hProcess]
