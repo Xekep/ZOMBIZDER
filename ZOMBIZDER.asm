@@ -30,11 +30,14 @@ start:
 			invoke SetCurrentDirectoryA,StartPath
 		.endif
 		invoke RegCloseKey,[HKey]
-	.else
-		invoke MessageBoxA,0,'Стимопуть не найден.','Ирар',MB_ICONERROR+MB_OK
-		jmp .exit
 	.endif
 	invoke lstrcatA,StartPath,ZombiExe
+	INVALID_FILE_ATTRIBUTES = -1
+	invoke GetFileAttributes,StartPath
+	.if eax=INVALID_FILE_ATTRIBUTES
+		invoke MessageBoxA,0,'Гамес не найден.','Ирар',MB_ICONERROR+MB_OK
+		jmp .exit
+	.endif
 	invoke CreateProcessA,StartPath,0,0,0,0,CREATE_SUSPENDED,0,0,sinfo,pinfo
 	.if eax<>0
 		invoke VirtualProtectEx,[pinfo.hProcess],005F58D6h,1,PAGE_EXECUTE_READWRITE,lpflOldProtec
