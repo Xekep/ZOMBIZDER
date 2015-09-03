@@ -30,8 +30,11 @@ proc injThread arg
 	sub ebx,.base
 	invoke _CreateMutexA+ebx,0,0,0
 	mov [hMutex+ebx],eax
+	; Меняем раскладку потока на английскую
+	invoke _LoadKeyboardLayoutA+ebx,'00000409',0
+	invoke _ActivateKeyboardLayout+ebx,eax,0
 	@@:
-	invoke _Sleep+ebx,40
+	invoke _Sleep+ebx,10
 	mov ecx,5Ah
 	lea edi,[.buff+ebx]
       .loop:
@@ -131,6 +134,13 @@ proc _fun1 arg1,EventName,arg3,arg4; Перехват событий интерфейса
 	test eax,eax
 	jne @f
 	mov [InGame+ebx],1
+	@@:
+	; Событие displaySubtitleEvent = не в игре
+	lea eax,[displaySubtitleEvent+ebx]
+	invoke _lstrcmpW+ebx,[EventName],eax
+	test eax,eax
+	jne @f
+	mov [InGame+ebx],0
 	@@:
       .pass:
 	popad
@@ -254,10 +264,13 @@ _lstrcmpA dd ?
 _GetKeyboardState dd ?
 _ToAscii dd ?
 _memcpy dd ?
+_ActivateKeyboardLayout dd ?
+_LoadKeyboardLayoutA dd ?
 
 displayActiveText2Event du 'displayActiveText2Event',0
 setSlotPositionEvent du 'setSlotPositionEvent',0
 displayStartScreenEvent du 'displayStartScreenEvent',0
+displaySubtitleEvent du 'displaySubtitleEvent',0
 
 hModule dd 0
 hMutex dd ?
@@ -391,6 +404,10 @@ proc InitWinApi
 		mov [_VirtualProtect],eax
 		mov eax,[memcpy]
 		mov [_memcpy],eax
+		mov eax,[ActivateKeyboardLayout]
+		mov [_ActivateKeyboardLayout],eax
+		mov eax,[LoadKeyboardLayoutA]
+		mov [_LoadKeyboardLayoutA],eax
 		ret
 endp
 .end start
