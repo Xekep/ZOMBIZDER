@@ -93,12 +93,29 @@ proc injThread arg
 			mov dword [edi],0
 			jmp .endloop
 		.endif
+		lea eax,[edi+esi-5]
+		invoke _lstrcmpA+ebx,eax,'idohk'
+		.if eax=0
+			lea eax,[_DrawText+ebx]
+			.if [OneHitKills+ebx]
+				lea ecx,[.onehitkillsoff+ebx]
+				mov [OneHitKills+ebx],0
+			.else
+				lea ecx,[.onehitkillson+ebx]
+				mov [OneHitKills+ebx],1
+			.endif
+			invoke _CreateThread+ebx,0,0,eax,ecx,0,0
+			mov dword [edi],0
+			jmp .endloop
+		.endif
 	.endif
       .endloop:
 	jmp @b
 	.buff rb 11
-	.godmodeon du 'God mode on',0
-	.godmodeoff du 'God mode off',0
+	.godmodeon du 'God mode ON',0
+	.godmodeoff du 'God mode OFF',0
+	.onehitkillson du 'One hit kills ON',0
+	.onehitkillsoff du 'One hit kills OFF',0
 	.giveall du 'All Weapons',0
 endp
 
@@ -189,6 +206,10 @@ proc _godmode
      .godmodeoff:
 	comiss xmm0,xmm1
 	jb .m1 ; ON DEATH XXM1
+	.if [OneHitKills+ebx]=1
+		cmp dword [ebp+1ch],18AD68h
+		je .m1
+	.endif
 	movss dword [esi],xmm0
 	jmp .m2 ; ON NEARBY POP'S AND RET
      .godmode:
@@ -276,6 +297,7 @@ hModule dd 0
 hMutex dd ?
 InGame db 0
 GodMode db 0
+OneHitKills db 0
 
 _injCode_size = $-injThread
 
