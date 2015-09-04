@@ -197,21 +197,20 @@ proc _godmode
        .base:
 	pop ebx
 	sub ebx,.base
-	cmp [GodMode+ebx],1
-	jne .godmodeoff
-	cmp ebp,18AD1Ch
-	je .godmode
-	cmp ebp,18AD68h
-	je .godmode
-     .godmodeoff:
+	.if [GodMode+ebx]=1 ; Чит GodMode
+		cmp ebp,18AD1Ch ; Игрок
+		je .godmode
+		cmp ebp,18AD68h ; Игрок
+		je .godmode
+	.endif
 	comiss xmm0,xmm1
-	jb .m1 ; ON DEATH XXM1
-	.if [OneHitKills+ebx]=1
-		cmp dword [ebp+1ch],18AD68h
-		je .m1
+	jb .m1 ; Смерть
+	.if [OneHitKills+ebx]=1 ; Чит OneHitKills
+		cmp dword [ebp+1ch],18AD68h ; Если урон наносит игрок
+		je .m1 ; Убиваем зомби
 	.endif
 	movss dword [esi],xmm0
-	jmp .m2 ; ON NEARBY POP'S AND RET
+	jmp .m2
      .godmode:
 	push edi
 	mov edi,dword [esi+4]
