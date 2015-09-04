@@ -1,0 +1,44 @@
+----------Weapons----------
+; Слоты инвентаря
+; 0|2|4|6|8|10|12
+; 1|3|5|7|9|11|13
+-\-\-\-\Melee-\-\-\-\-\
+6 = Cricket (Base Melee Weapon)
+21 = Nailed Basball Bat
+22 = Shovel
+-\-\-\-\Hangun\-\-\-\-\
+1 = L9A1
+14 = P226 Silenced
+-\-\-\-\Magnum\-\-\-\-\
+13 = Magnum
+-\-\-\-\Shotgun\-\-\-\-\
+2 = 870
+15 = Double Barred
+16 = M4 Tactical
+-\-\-\-\Assault\-\-\-\-\
+19 = AK47
+20 = Sa80A2
+-\-\-\-\Precision\-\-\-\-\
+17 = N4 MK1
+18 = 770
+//////OTHER
+4 = Crossbow
+11 = MP45
+12 = MP5 SD
+----------Ammo----------
+101 = 9mm (Hangun)
+102 = 12mm (Shotgun)
+104 = Bolt (Crossbvow)
+106 = (MP45,MP5 SD)
+107 = 5.56mm (Assault)
+108 = 375 Magnum (Magnum)
+109 = 5.5mm (Precision)
+110 = M2 (Fixed Turret Ammo)
+----------Explosive/Throwable----------
+81 = Grenades
+82 = Molotov
+85 = Bengala
+303 = Mines
+----------Restorative----------
+205 = Soda
+206 = Chocolate

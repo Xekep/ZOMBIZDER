@@ -87,6 +87,13 @@ proc injThread arg
 		lea eax,[edi+esi-5]
 		invoke _lstrcmpA+ebx,eax,'idkfa'
 		.if eax=0
+			lea eax,[_giveweapons+ebx]
+			call eax
+			.if al=0
+				lea eax,[_DrawText+ebx]
+				lea ecx,[.invisfull+ebx]
+				invoke _CreateThread+ebx,0,0,eax,ecx,0,0
+			.endif
 			lea eax,[_DrawText+ebx]
 			lea ecx,[.giveall+ebx]
 			invoke _CreateThread+ebx,0,0,eax,ecx,0,0
@@ -116,7 +123,8 @@ proc injThread arg
 	.godmodeoff du 'God mode OFF',0
 	.onehitkillson du 'One hit kills ON',0
 	.onehitkillsoff du 'One hit kills OFF',0
-	.giveall du 'All Weapons',0
+	.giveall du 'Weapons Cheat Activaed',0
+	.invisfull du 'Inventory is full',0
 endp
 
 proc _fun1 arg1,EventName,arg3,arg4; Перехват событий интерфейса
@@ -151,6 +159,7 @@ proc _fun1 arg1,EventName,arg3,arg4; Перехват событий интерфейса
 	test eax,eax
 	jne @f
 	mov [InGame+ebx],1
+	mov [inventory+ebx],edi
 	@@:
 	; Событие displaySubtitleEvent = не в игре
 	lea eax,[displaySubtitleEvent+ebx]
@@ -189,6 +198,38 @@ proc injHooks hModule
 	popad
 	ret
 	.byte db 0b8h,0,0,0,0,0ffh,0e0h,90h,90h,90h
+endp
+
+proc _giveweapons
+	local release:DWORD
+
+	pushad
+	call .base
+       .base:
+	pop ebx
+	sub ebx,.base
+	mov ecx,.weapons_arr_size
+	@@:
+	push ecx
+	movzx edx,[.weapons_arr+ebx+ecx-1]
+	mov ecx,[inventory+ebx]
+	mov eax,[hModule+ebx]
+	add eax,1F38E0h
+	stdcall eax,edx,255,1
+	mov [release],eax
+	pop ecx
+	cmp al,0
+	je @f
+	dec ecx
+	cmp ecx,0
+	ja @b
+	@@:
+	popad
+	mov eax,[release]
+	ret
+
+	.weapons_arr db 13,15,16,19,20,17,18
+	.weapons_arr_size = $-.weapons_arr
 endp
 
 proc _godmode
@@ -238,6 +279,8 @@ proc _DrawText text
 		invoke _WaitForSingleObject+ebx,[hMutex+ebx],-1
 		cmp eax,WAIT_OBJECT_0
 		jne .exit
+		cmp [InGame+ebx],1
+		jne .release
 		; Показываем текст
 		push 10
 		push [text]
@@ -248,7 +291,7 @@ proc _DrawText text
 		lea eax,[esi+12E6D0h]
 		call eax
 		; Засыпаем
-		invoke _Sleep+ebx,900
+		invoke _Sleep+ebx,1000
 		; Убираем текст
 		push 10
 		push [text]
@@ -258,6 +301,7 @@ proc _DrawText text
 		mov ecx,eax
 		lea eax,[esi+12E6D0h]
 		call eax
+	      .release:
 		invoke _ReleaseMutex+ebx,[hMutex+ebx]
 	.endif
       .exit:
@@ -297,6 +341,8 @@ hMutex dd ?
 InGame db 0
 GodMode db 0
 OneHitKills db 0
+inventory dd ?
+player dd ?
 
 _injCode_size = $-injThread
 
