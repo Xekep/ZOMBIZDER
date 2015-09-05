@@ -234,7 +234,7 @@ proc _giveweapons
 	mov eax,[release]
 	ret
 
-	.weapons_arr db 13,15,16,19,20,17,18
+	.weapons_arr db 13,15,16,19,20,17,18,4,12
 	.weapons_arr_size = $-.weapons_arr
 endp
 
@@ -282,6 +282,8 @@ proc _godmode
 	pop ebx
 	sub ebx,.base
 	.if [GodMode+ebx]=1 ; Чит GodMode
+		cmp ebp,18AD58h ; Игрок
+		je .godmode
 		cmp ebp,18AD1Ch ; Игрок
 		je .godmode
 		cmp ebp,18AD68h ; Игрок
