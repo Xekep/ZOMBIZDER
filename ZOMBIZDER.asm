@@ -127,18 +127,18 @@ proc injThread arg
 	.invisfull du 'Inventory is full',0
 endp
 
-proc _fun1 arg1,EventName,arg3,arg4; Перехват событий интерфейса
+proc _fun1 arg1,EventName,arg3,arg4 ; Перехват событий интерфейса
 	pushad
 	call .base
        .base:
 	pop ebx
 	sub ebx,.base
 	; Регион логирования событий
-	cinvoke __wfopen+ebx,'Events.log','a'
-	mov esi,eax
-	lea ecx,[.format+ebx]
-	cinvoke _fwprintf+ebx,eax,ecx,[EventName]
-	cinvoke _fclose+ebx,esi
+    ;	 cinvoke __wfopen+ebx,'Events.log','a'
+    ;	 mov esi,eax
+    ;	 lea ecx,[.format+ebx]
+    ;	 cinvoke _fwprintf+ebx,eax,ecx,[EventName]
+    ;	 cinvoke _fclose+ebx,esi
 	; Конец региона
 	.if [hModule+ebx]=0
 		invoke _GetModuleHandleA+ebx,'rabbids.win32.f.dll'
@@ -213,10 +213,16 @@ proc _giveweapons
 	push ecx
 	movzx edx,[.weapons_arr+ebx+ecx-1]
 	mov ecx,[inventory+ebx]
-	mov eax,[hModule+ebx]
-	add eax,1F38E0h
-	stdcall eax,edx,255,1
-	mov [release],eax
+	lea eax,[_addbullets+ebx]
+	stdcall eax,edx ; Добавляем патронов, если оружие уже есть
+	.if al=0
+		; Добавляем оружие в инвентарь
+		mov ecx,[inventory+ebx]
+		mov eax,[hModule+ebx]
+		add eax,1F38E0h
+		stdcall eax,edx,255,1
+		mov [release],eax
+	.endif
 	pop ecx
 	cmp al,0
 	je @f
@@ -230,6 +236,43 @@ proc _giveweapons
 
 	.weapons_arr db 13,15,16,19,20,17,18
 	.weapons_arr_size = $-.weapons_arr
+endp
+
+proc _addbullets id
+	push esi
+	push edi
+	push edx
+	mov edi,ecx
+	mov ecx,[id]
+	xor eax,eax
+	mov esi,dword [edi+0d8h]
+	test esi,esi
+	jle .m1
+	lea edx,[edi+144h]
+	@@:
+	cmp dword [edx],ecx
+	je .m1
+	inc eax
+	add edx,1ch
+	cmp eax,esi
+	jl @b
+       .m1:
+	cmp eax,esi
+	jne .add
+	xor al,al
+	pop edx
+	pop edi
+	pop esi
+	ret
+     .add:
+	lea ecx,[eax*8]
+	sub ecx,eax
+	mov dword [ecx*4+edi+148h],255
+	mov al,1
+	pop edx
+	pop edi
+	pop esi
+	ret
 endp
 
 proc _godmode
