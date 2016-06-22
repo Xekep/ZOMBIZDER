@@ -1,8 +1,0 @@
-0045D0C7 - JE выход
-0045C23B - CALL ЮплейСтарт
-005F5890 - ЮплейСтарт
-005F58D6 - Безусловный переход*
-009B390A - Юплеевские процедуры
-009B3958 - ret* uplay_r1_loader.UPLAY_WIN_SetActionsCompleted
-009B396A - ret* uplay_r1_loader.UPLAY_Start
-005F3101 - 88* // Разблокировка дополнительного контента
